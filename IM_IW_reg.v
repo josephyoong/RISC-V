@@ -15,6 +15,14 @@ module IM_IW_reg (
     output reg ctrl_result_W
 );
 
+initial begin
+    ALU_result_W = 0;
+    register_file_WA_W = 0;
+    data_memory_RD_W = 0;
+    ctrl_register_file_WE_W = 0;
+    ctrl_result_W = 0;
+end
+
 always @(posedge clk) begin
     ALU_result_W <= ALU_result_M;
     register_file_WA_W <= register_file_WA_M;

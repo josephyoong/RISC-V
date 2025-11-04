@@ -31,6 +31,22 @@ module ID_IE_reg (
     output reg [2:0] ctrl_ALU_op_D,
 );
 
+initial begin
+    srcA_E = 0;
+    register_file_srcB_E = 0;
+    rs2_E = 0;
+    rd_E = 0;
+    sign_imm_E = 0;
+    PC_plus4_E = 0;
+    ctrl_register_file_WE_E = 0;
+    ctrl_srcB_E = 0;
+    ctrl_register_file_WA_E = 0;
+    ctrl_data_memory_WE_E = 0;
+    ctrl_result_E = 0;
+    ctrl_branch_E = 0;
+    ctrl_ALU_op_E = 0;
+end
+
 always @(posedge clk) begin
     srcA_E <= srcA_D;
     register_file_srcB_E <= register_file_srcB_D;

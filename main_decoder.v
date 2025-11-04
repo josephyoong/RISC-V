@@ -33,6 +33,14 @@ always @(*) begin
         ctrl_result_D           = 1'b0; // result comes from ALU
         ctrl_ALU_op_D           = 3'b010; // add
     end
+    default: begin
+        ctrl_register_file_WE_D = 1'b0;
+        ctrl_srcB_D             = 1'b0;
+        ctrl_register_file_WA_D = 1'b0; 
+        ctrl_data_memory_WE_D   = 1'b0; 
+        ctrl_result_D           = 1'b0; 
+        ctrl_ALU_op_D           = 3'b000; 
+    end
     endcase
 end
 

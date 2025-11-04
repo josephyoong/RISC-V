@@ -21,6 +21,17 @@ module IE_IM_reg (
     output reg ctrl_result_M
 );
 
+initial begin
+    ALU_zero_M = 0;
+    ALU_result_M = 0;
+    register_file_srcB_M = 0;
+    register_file_WA_M = 0;
+    PC_branch_M = 0;
+    ctrl_register_file_WE_M = 0;
+    ctrl_data_memory_WE_M = 0;
+    ctrl_result_M = 0;
+end
+
 always @(posedge clk) begin
     ALU_zero_M <= ALU_zero_E;
     ALU_result_M <= ALU_result_E;

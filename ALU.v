@@ -15,6 +15,10 @@ parameter AND_OP = 3'b000;
 parameter OR_OP = 3'b001;
 parameter LESS_THAN = 3'b111;
 
+initial begin
+    ALU_result = 0;
+end
+
 always @(*) begin
     case (ALU_control)
     ADD: ALU_result = srcA + srcB;

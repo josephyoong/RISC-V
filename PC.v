@@ -11,7 +11,7 @@ module PC (
 reg [31:0] r_PC;
 
 initial begin
-    PC = 32'h00000000;
+    PC = 0;
 end
 
 always @(posedge clk) begin
