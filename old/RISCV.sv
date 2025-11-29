@@ -26,6 +26,8 @@ wire [31:0] PC_plus4_E;
 wire [4:0]  rs2_E;
 wire [4:0]  rd_E;
 wire [31:0] sign_imm_E;
+wire [31:0] srcA_reg_file_E;
+wire [31:0] srcB_notsignimm_E;
 wire [31:0] srcB;
 wire [31:0] ALU_result_E;
 wire        ALU_zero_E;
@@ -37,7 +39,7 @@ wire [31:0] register_file_srcB_M;
 wire [31:0] register_file_WA_M;
 wire [31:0] PC_branch_M;
 wire [31:0] data_memory_RD_M;
-wire [31:0] ALU_result_W;
+wire [31:0] ALU_resuhlt_W;
 wire [4:0]  register_file_WA_W;
 wire [31:0] data_memory_RD_W;
 
@@ -46,7 +48,7 @@ wire [31:0] data_memory_RD_W;
 wire ctrl_register_file_WE_D;                  
 wire ctrl_srcB_D;
 wire ctrl_register_file_WA_D;
-wire [2:0] ctrl_ALU_op_D;
+wire [2:0] ctrl_ALU_D;
 wire ctrl_data_memory_WE_D;
 wire ctrl_result_D;
 wire ctrl_PC_src_D;
@@ -55,7 +57,7 @@ wire ctrl_branch_D;
 wire ctrl_register_file_WE_E;                  
 wire ctrl_srcB_E;
 wire ctrl_register_file_WA_E;
-wire [2:0] ctrl_ALU_op_E;
+wire [2:0] ctrl_ALU_E;
 wire ctrl_data_memory_WE_E;
 wire ctrl_result_E;
 wire ctrl_PC_src_E;
@@ -71,9 +73,23 @@ wire ctrl_result_W;
 
 wire ctrl_PC_src_M = 0;
 
+//
+//
+//
+//
+//
 // * - - - FETCH - - - *
-MUX2to1 RISCV_MUX2to1_PC_next (
-    .control(ctrl_PC_src_M),            // CONTROL FROM MEMORY
+//
+//
+//
+//
+//
+//
+//
+//
+
+MUX2 RISCV_MUX2_PC_next (
+    .sel(ctrl_PC_src_M),            // CONTROL FROM MEMORY
     .I0(PC_plus4_F),                    
     .I1(PC_branch_M),                   // FROM MEMORY
     .O(PC_next)                         // out
@@ -91,12 +107,26 @@ instruction_memory RISCV_instruction_memory (
     .RD(instr_F)                        // out
 );
 
-PC_plus4 IRISCV_PC_plus4 (
+PC_plus4 RISCV_PC_plus4 (
     .I(PC),
     .O(PC_plus4_F)                      // out
 );
 
+//
+//
+//
+//
+//
 // * - - - DECODE - - - *
+//
+//
+//
+//
+//
+//
+//
+//
+
 IF_ID_reg RISCV_IF_ID_reg (
     .clk(clk),
     // FROM FETCH
@@ -131,10 +161,24 @@ control_unit RISCV_control_unit (
     .ctrl_register_file_WA_D(ctrl_register_file_WA_D),
     .ctrl_data_memory_WE_D(ctrl_data_memory_WE_D),
     .ctrl_result_D(ctrl_result_D),
-    .ctrl_ALU_op_D(ctrl_ALU_op_D)
+    .ctrl_ALU_D(ctrl_ALU_D)
 );
 
+//
+//
+//
+//
+//
 // * - - - EXECUTE - - - *
+//
+//
+//
+//
+//
+//
+//
+//
+
 ID_IE_reg RISCV_ID_IE_reg (
     .clk(clk),
     // FROM DECODE
@@ -150,9 +194,9 @@ ID_IE_reg RISCV_ID_IE_reg (
     .ctrl_data_memory_WE_D(ctrl_data_memory_WE_D),
     .ctrl_result_D(ctrl_result_D),
     .ctrl_branch_D(ctrl_branch_D),
-    .ctrl_ALU_op_D(ctrl_ALU_op_D),
+    .ctrl_ALU_D(ctrl_ALU_D),
     // TO EXECUTE   
-    .srcA_E(srcA_E),
+    .srcA_E(srcA_reg_file_E),
     .register_file_srcB_E(register_file_srcB_E),
     .rs2_E(rs2_E),
     .rd_E(rd_E),
@@ -164,27 +208,43 @@ ID_IE_reg RISCV_ID_IE_reg (
     .ctrl_data_memory_WE_E(ctrl_data_memory_WE_E),
     .ctrl_result_E(ctrl_result_E),
     .ctrl_branch_E(ctrl_branch_E),
-    .ctrl_ALU_op_E(ctrl_ALU_op_E)
+    .ctrl_ALU_E(ctrl_ALU_E)
 );
 
-MUX2to1 RISCV_MUX2to1_SrcB (
-    .control(ctrl_srcB_E),              // CONTROL
-    .I0(register_file_srcB_E),
-    .I1(sign_imm_E),
-    .O(srcB)                            // out
-);
-
-MUX2to1 RISCV_MUX2to1_register_file_WA (
-    .control(ctrl_register_file_WA_E),    // CONTROL
+MUX2 RISCV_MUX2_register_file_WA (
+    .sel(ctrl_register_file_WA_E),    // CONTROL
     .I0(rs2_E),
     .I1(rd_E),
     .O(register_file_WA_E)              // out
 );
 
+MUX3 RISCV_MUX3_srcA (
+    sel(),                          // CONTROL
+    I00(srcA_reg_file_E),
+    I01(result_W),
+    I10(ALU_result_M),
+    O(srcA_E)
+);
+
+MUX3 RISCV_MUX3_srcB_notsignimm (
+    sel(),                          // CONTROL
+    I00(register_file_srcB_E),
+    I01(result_W),
+    I10(ALU_result_M),
+    O(srcB_notsignimm_E)
+);
+
+MUX2 RISCV_MUX2_SrcB (
+    .sel(ctrl_srcB_E),              // CONTROL
+    .I0(srcB_notsignimm_E),
+    .I1(sign_imm_E),
+    .O(srcB)                            // out
+);
+
 ALU RISCV_ALU (
     .srcA(srcA_E),
     .srcB(srcB),
-    .ALU_control(ctrl_ALU_op_E),          // CONTROL
+    .ALU_control(ctrl_ALU_E),          // CONTROL
     .ALU_result(ALU_result_E),          // out
     .zero(ALU_zero_E)                   // out
 );
@@ -195,7 +255,21 @@ PC_branch RISCV_PC_branch (
     .PC_branch(PC_branch_E)
 );
 
+//
+//
+//
+//
+//
 // * - - - MEMORY - - - *
+//
+//
+//
+//
+//
+//
+//
+//
+
 IE_IM_reg RISCV_IE_IM_reg (
     .clk(clk),
     // FROM EXECUTE
@@ -226,7 +300,21 @@ data_memory #(.DATA_MEMORY_DEPTH(256)) RISCV_data_memory (
     .RD(data_memory_RD_M)               // out
 );
 
+//
+//
+//
+//
+//
 // * - - - WRITEBACK - - - *
+//
+//
+//
+//
+//
+//
+//
+//
+
 IM_IW_reg RISCV_IM_IW_reg (
     .clk(clk),
     // FROM MEMORY
@@ -243,8 +331,8 @@ IM_IW_reg RISCV_IM_IW_reg (
     .ctrl_result_W(ctrl_result_W)
 );
 
-MUX2to1 RISCV_MUX2to1 (
-    .control(ctrl_result_W),            // CONTROL
+MUX2 RISCV_MUX2_result (
+    .sel(ctrl_result_W),            // CONTROL
     .I0(ALU_result_W),
     .I1(data_memory_RD_W),
     .O(result_W)                        // out

@@ -1,25 +1,20 @@
 // PC
 // Program Counter (PC)
 
-module PC (
+module program_counter (
     input clk,
     input rst,
-    input [31:0] PC_next,
-    output reg [31:0] PC
+    input en,
+    input [31:0] i_PC_next,
+    output reg [31:0] o_PC
 );
-
-reg [31:0] r_PC;
-
-initial begin
-    PC = 0;
-end
 
 always @(posedge clk) begin
     if (rst) begin
-        PC <= 32'h00000000;
+        o_PC <= 32'h00000000;
     end
-    else begin
-        PC <= PC_next;
+    else if (en) begin
+        o_PC <= i_PC_next;
     end
 end
 

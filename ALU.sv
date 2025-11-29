@@ -5,8 +5,7 @@ module ALU (
     input [31:0] srcA,
     input [31:0] srcB,
     input [2:0] ALU_control,
-    output reg [31:0] ALU_result,
-    output zero // for >, if zero srcA = src B
+    output reg [31:0] ALU_result
 );
 
 parameter ADD = 3'b010;
@@ -29,7 +28,5 @@ always @(*) begin
     default: ALU_result = 32'b0;
     endcase
 end
-
-assign zero = (ALU_result == 32'b0);
 
 endmodule

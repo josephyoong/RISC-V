@@ -2,13 +2,13 @@
 // Instruction Memory
 
 module instruction_memory (
-    input [31:0] A,
-    output [31:0] RD
+    input [31:0] i_rd_addr,
+    output [31:0] o_rd_data
 );
 
 reg [31:0] r_instruction [0:31];
 
-assign RD = r_instruction[A[4:0]];
+assign o_rd_data = r_instruction[i_rd_addr[4:0]];
 
 initial begin
     r_instruction[0]  = 32'h02328020; // add $s0, $s1, $s2 => rs=$s1(17) rt=$s2(18) rd=$s0(16) 

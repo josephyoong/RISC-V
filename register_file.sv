@@ -3,13 +3,13 @@
 
 module register_file (
     input clk,
-    input WE3, // write enable
-    input [4:0] A1, // address
-    input [4:0] A2,
-    input [4:0] A3, // destination address
-    input [31:0] WD3, // write data
-    output [31:0] RD1, // read data
-    output [31:0] RD2
+    input i_wr_en, // write enable
+    input [4:0] i_rd_addr1, // address
+    input [4:0] i_rd_addr2,
+    input [4:0] i_wr_addr, // destination address
+    input [31:0] i_wr_data, // write data
+    output [31:0] o_rd_data1, // read data
+    output [31:0] o_rd_data2
 );
 
 reg [31:0] r_register [0:31];
@@ -51,12 +51,12 @@ initial begin
 end
 
 always @(posedge clk) begin
-    if (WE3 && (A3 != 5'b0)) begin
-        r_register[A3] <= WD3;
+    if (i_wr_en && (i_wr_addr != 5'b0)) begin
+        r_register[i_wr_addr] <= i_wr_data;
     end
 end
 
-assign RD1 = r_register[A1];
-assign RD2 = r_register[A2];
+assign o_rd_data1 = r_register[i_rd_addr1];
+assign o_rd_data2 = r_register[i_rd_addr2];
 
 endmodule
