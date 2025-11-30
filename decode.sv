@@ -13,10 +13,10 @@ module decode (
     input [4:0]     i_register_file_wr_addr_W,
     input [31:0]    i_result_W,
 
-    input           i_fwdA_D,   // hazard control
-    input           i_fwdB_D,   // hazard control
+    input [31:0]    i_ALU_output_M,
 
-    input [2:0]     i_imm_sel_D,
+    input           i_fwdA_D,  
+    input           i_fwdB_D,  
 
     output [31:0]   o_s1_D,
     output [31:0]   o_s2_D,
@@ -25,9 +25,11 @@ module decode (
     output [4:0]    o_rs1_D,
     output [4:0]    o_rs2_D,
 
-    output [31:0]   o_sign_imm_D,
+    output reg [31:0]   o_sign_imm_D,
 
     output [31:0]   o_PC_branch_D,
+
+    output          o_equal_D,
 
     output          o_register_file_wr_en_D,
     output          o_data_memory_wr_en_D,
@@ -56,9 +58,8 @@ wire [31:0] sign_imm_U;
 wire [31:0] sign_imm_J;
 wire [2:0]  sel_imm;
 // equality
-wire [31:0] eq1;
-wire [31:0] eq2;
-wire [31:0] equal;
+wire [31:0] eqA;
+wire [31:0] eqB;
 
 // registers
 reg [31:0] instr;
@@ -101,13 +102,13 @@ register_file decode_register_file (
     .o_rd_data1(s1),
     .o_rd_data2(s2)
 );
-assign o_s1 = s1;
-assign o_s2 = s2;
+assign o_s1_D = s1;
+assign o_s2_D = s2;
 
 // MUX input to equal comparator is s or ALU result forwarded 
-assign eqA = i_fwdA_D ? ALU_result_W : s1;
-assign eqB = i_fwdB_D ? ALU_result_W : s2;
-assign equal = (eq1 == eq2);
+assign eqA = i_fwdA_D ? i_ALU_output_M : s1;
+assign eqB = i_fwdB_D ? i_ALU_output_M : s2;
+assign o_equal_D = (eqA == eqB);
 
 // compute branch PC
 assign o_PC_branch_D = PC_plus4 + sign_imm_B;
@@ -116,12 +117,6 @@ assign o_PC_branch_D = PC_plus4 + sign_imm_B;
 assign o_rd_D  = rd;
 assign o_rs1_D = rs1;
 assign o_rs2_D = rs2;
-
-assign o_sign_imm_I_D = sign_imm_I;
-assign o_sign_imm_S_D = sign_imm_S;
-assign o_sign_imm_B_D = sign_imm_B;
-assign o_sign_imm_U_D = sign_imm_U;
-assign o_sign_imm_J_D = sign_imm_J;
 
 // generate control signals from instr
 control_unit decode_control_unit (
@@ -141,12 +136,12 @@ control_unit decode_control_unit (
 
 // MUX select imm depending on instr type
 always @(*) begin
-    case (i_imm_sel_D)
-        3'b000: o_sign_imm_D = imm_I;
-        3'b001: o_sign_imm_D = imm_S;
-        3'b010: o_sign_imm_D = imm_B;
-        3'b011: o_sign_imm_D = imm_U;
-        3'b100: o_sign_imm_D = imm_J;
+    case (sel_imm)
+        3'b000: o_sign_imm_D = sign_imm_I;
+        3'b001: o_sign_imm_D = sign_imm_S;
+        3'b010: o_sign_imm_D = sign_imm_B;
+        3'b011: o_sign_imm_D = sign_imm_U;
+        3'b100: o_sign_imm_D = sign_imm_J;
     endcase
 end
 

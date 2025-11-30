@@ -4,13 +4,13 @@ module writeback (
     input clk,
 
     input [31:0]  i_ALU_output_M,
-    input [4:0]   i_register_file_wr_addr_M
+    input [4:0]   i_register_file_wr_addr_M,
     input [31:0]  i_rd_data_M,
 
     input         i_register_file_wr_en_M,
     input         i_sel_result_M,
 
-    output        o_result_W,
+    output [31:0] o_result_W,
 
     output        o_register_file_wr_en_W,
     output [4:0]  o_register_file_wr_addr_W

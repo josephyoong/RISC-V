@@ -29,14 +29,15 @@ module execute (
 
     output [4:0]    o_register_file_wr_addr_E,
     output [31:0]   o_ALU_output_E,
-    output [31:0]   o_wr_data_E
+    output [31:0]   o_wr_data_E,
 
     output          o_register_file_wr_en_E,
     output          o_data_memory_wr_en_E,
     output          o_sel_result_E,
 
     output [4:0]    o_rs1_E,
-    output [4:0]    o_rs2_E
+    output [4:0]    o_rs2_E,
+    output [4:0]    o_rd_E
 );
 
 wire [31:0] srcA;
@@ -51,11 +52,7 @@ reg [4:0]    rd;
 reg [4:0]    rs1;
 reg [4:0]    rs2;
 
-reg [31:0]   sign_imm_I;
-reg [31:0]   sign_imm_S;
-reg [31:0]   sign_imm_B;
-reg [31:0]   sign_imm_U;
-reg [31:0]   sign_imm_J;
+reg [31:0] sign_imm;
 
 reg           register_file_wr_en;
 reg           data_memory_wr_en;
@@ -67,7 +64,19 @@ reg           branch;
 
 always @(posedge clk) begin
     if (clr) begin
-        
+        s1 <= 0;
+        s2 <= 0;
+        rd <= 0;
+        rs1 <= 0;
+        rs2 <= 0;
+        sign_imm <= 0;
+        register_file_wr_en <= 0;
+        data_memory_wr_en <= 0;
+        ALU_ctrl <= 0;
+        sel_srcB <= 0;
+        sel_register_file_wr_addr <= 0;
+        sel_result <= 0;
+        branch <= 0;
     end
     else begin
         s1 <= i_s1_D;
@@ -77,7 +86,7 @@ always @(posedge clk) begin
         rs1 <= i_rs1_D;
         rs2 <= i_rs2_D;
 
-        sign_imm <= i_sign_imm_I_D;
+        sign_imm <= i_sign_imm_D;
 
         register_file_wr_en <= i_register_file_wr_en_D;
         data_memory_wr_en <= i_data_memory_wr_en_D;
@@ -116,5 +125,6 @@ assign o_data_memory_wr_en_E = data_memory_wr_en;
 assign o_sel_result_E = sel_result;
 assign o_rs1_E = rs1;
 assign o_rs2_E = rs2;
+assign o_rd_E = rd;
 
 endmodule

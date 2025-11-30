@@ -6,7 +6,7 @@ module ALU_decoder (
     input [2:0] funct3,
     input [6:0] funct7,
     input [2:0] ctrl_ALU_op,
-    output [3:0] ctrl_ALU
+    output reg [3:0] ctrl_ALU
 );
 
 always @(*) begin

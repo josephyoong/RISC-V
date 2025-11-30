@@ -13,7 +13,7 @@ module fetch (
 );
 
 wire [31:0] PC_next;
-wire [31:0] PC;
+reg [31:0] PC;
 wire [31:0] PC_plus4;
 
 assign PC_plus4 = PC + 4;
@@ -25,7 +25,7 @@ assign PC_next = i_sel_PC_D ? i_PC_branch_D : PC_plus4;
 // program counter takes next value on clock edge if not stalled
 always @(posedge clk) begin
     if (rst) begin
-        o_PC <= 32'h00000000;
+        PC <= 32'h00000000;
     end
     else if (i_en) begin
         PC <= PC_next;

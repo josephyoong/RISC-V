@@ -12,11 +12,12 @@ module memory (
     input          i_sel_result_E,
 
     output [31:0]  o_ALU_output_M,
-    output [4:0]   o_register_file_wr_addr_M
+    output [4:0]   o_register_file_wr_addr_M,
     output [31:0]  o_rd_data_M,
 
     output         o_register_file_wr_en_M,
-    output         o_sel_result_M
+    output         o_sel_result_M,
+    output         o_data_memory_wr_en_M
 );
 
 // registers
@@ -51,5 +52,6 @@ assign o_ALU_output_M = ALU_output;
 assign o_register_file_wr_addr_M = register_file_wr_addr;
 assign o_register_file_wr_en_M = register_file_wr_en;
 assign o_sel_result_M = sel_result;
+assign o_data_memory_wr_en_M = data_memory_wr_en;
 
 endmodule

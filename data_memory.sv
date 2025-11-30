@@ -16,7 +16,7 @@ reg [31:0] r_data [0:DATA_MEMORY_DEPTH-1];
 integer i;
 initial begin
     for (i=0; i<DATA_MEMORY_DEPTH; i++) begin
-        reg[i] = 0;
+        r_data[i] = 0;
     end
 end
 
